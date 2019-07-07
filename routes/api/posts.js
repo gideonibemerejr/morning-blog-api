@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const postsCtrl = '../../controllers/api/posts'
+const postsCtrl = require('../../controllers/api/posts')
 
 // GET all Blog Posts
 router.get('/', postsCtrl.getAllPosts)
