@@ -1,41 +1,32 @@
-var createError = require('http-errors')
-var express = require('express')
-var path = require('path')
-var cookieParser = require('cookie-parser')
-var logger = require('morgan')
+const express = require('express')
+const path = require('path')
+const favicon = require('serve-favicon')
+const logger = require('morgan')
+const scoresApiRouter = require('./routes/api/scores')
+const app = express()
+const cors = require('cors')
 
-var indexRouter = require('./routes/index')
-var usersRouter = require('./routes/users')
-
-var app = express()
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'jade')
+require('dotenv').config()
+require('./config/database')
 
 app.use(logger('dev'))
 app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', indexRouter)
-app.use('/users', usersRouter)
+app.use(favicon(path.join(__dirname, 'build', 'favicon.ico')))
+app.use(express.static(path.join(__dirname, 'build')))
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404))
+// Put API routes here, before the "catch all" route
+app.use('/api/scores', scoresApiRouter)
+// The following "catch all" route (note the *)is necessary
+// for a SPA's client-side routing to properly work
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message
-  res.locals.error = req.app.get('env') === 'development' ? err : {}
+// Configure to use port 3001 instead of 3000 during
+// development to avoid coll`ision with React's dev server
+const port = process.env.PORT || 3001
 
-  // render the error page
-  res.status(err.status || 500)
-  res.render('error')
+app.listen(port, function() {
+  console.log(`Express app running on port ${port}`)
 })
-
-module.exports = app
