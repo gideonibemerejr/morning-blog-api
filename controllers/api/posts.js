@@ -7,6 +7,7 @@ module.exports = {
 
 async function create(req, res) {
   try {
+    console.log(req.body)
     await Post.create(req.body)
 
     getAllPosts(req, res)
